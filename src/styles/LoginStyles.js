@@ -1,0 +1,78 @@
+import { StyleSheet } from "react-native";
+
+export const LoginStyles = StyleSheet.create({
+  container: {
+    backgroundColor: "#fff",
+    width: "100%",
+    overflow: "hidden",
+    height: "100%",
+  },
+  imageStyle: {
+    width: "100%",
+    height: 300,
+  },
+  boxContainer: {
+    //padding: 20,
+  },
+  titleStyle: {
+    fontFamily: "Poppins-Regular",
+    fontSize: 30,
+    fontWeight: "bold",
+    lineHeight: 45,
+    color: "#040152",
+    marginLeft: 20,
+    marginTop: 30,
+  },
+  inputStyle: {
+    fontFamily: "Poppins-Regular",
+    backgroundColor: "#F5F8FF",
+    height: 43,
+    paddingLeft: 11,
+    borderRadius: 5,
+    color: "#898989",
+    fontSize: 12,
+    marginLeft: 20,
+    marginRight: 20,
+    lineHeight: 18,
+  },
+  inputTitle: {
+    fontFamily: "Poppins-Regular",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#040152",
+    paddingBottom: 10,
+    lineHeight: 24,
+    marginTop: 20,
+    marginLeft: 20,
+  },
+  forgetButtonText: {
+    fontFamily: "Poppins-Regular",
+    fontSize: 14,
+    lineHeight: 21,
+    marginTop: 19,
+    fontWeight: 600,
+    textAlign: "right",
+    fontWeight: "bold",
+    color: "#040152",
+    marginRight: 20,
+  },
+  loginButtonBox: {
+    padding: 10,
+  },
+  loginButton: {
+    backgroundColor: "#DF6476",
+    alignItems: "center",
+    padding: 10,
+    marginTop: 20,
+    marginRight: 30,
+    marginLeft: 30,
+    borderRadius: 10,
+  },
+  loginButtonText: {
+    fontFamily: "Poppins-Regular",
+    fontWeight: "bold",
+    fontSize: 20,
+    color: "#FFFFFF",
+    lineHeight: 30,
+  },
+});

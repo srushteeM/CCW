@@ -1,0 +1,480 @@
+import React, { useEffect, useState } from "react";
+import {
+    Image,
+    SafeAreaView,
+    Text,
+    View,
+    Dimensions,
+    FlatList,
+    TouchableOpacity,
+    StatusBar,
+    StyleSheet,
+    ScrollView,
+    Modal
+} from "react-native";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import DropDownPicker from 'react-native-dropdown-picker';
+import Header from "../../components/Header/Header";
+import { auth, db, storage } from "../../../backend/firebaseConfig";
+
+const BookCabins = () => {
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [showPicker, setShowPicker] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState('2');
+    const [c1, setC1] = useState(50)
+    const [c2, setC2] = useState(30)
+    const [c3, setC3] = useState(40)
+    const [buttonActive, setButtonActive] = useState(false)
+    const [click1, setClick1] = useState(0)
+    const [click2, setClick2] = useState(0)
+    const [items, setItems] = useState([
+        { label: '2 months', value: '2' },
+        { label: '4 months', value: '4' },
+        { label: '6 months', value: '6' },
+        { label: '8 months', value: '8' },
+    ])
+    const showDatePicker = () => {
+        setShowPicker(true);
+    };
+
+    const handleDateChange = (event, date) => {
+
+        if (date !== undefined) {
+            setSelectedDate(date);
+        }
+        setShowPicker(false);
+    };
+    const handleDropdownChange = (item) => {
+        setSelectedOption(item.value);
+    };
+    increment1 = () => {
+
+        setC1(c1 + 1)
+        setClick1(click1 + 1)
+        setButtonActive(true)
+    }
+    increment2 = () => {
+        setC2(c2 + 1)
+        setClick2(click2 + 1)
+        setButtonActive(true)
+    }
+    increment3 = () => {
+        setC3(c3 + 1)
+    }
+    decrement1 = () => {
+        if (click1 > 0) {
+            setC1(c1 - 1)
+            setClick1(click1 - 1)
+        }
+    }
+    decrement2 = () => {
+        if (click2 > 0) {
+            setC2(c2 - 1)
+            setClick2(click2 - 1)
+        }
+    }
+    decrement3 = () => {
+        setC3(c3 - 1)
+    }
+
+    const RenderHeader = () => {
+        return (
+
+            <View>
+
+                <View style={{ flexDirection: "row", marginLeft:10 }}>
+
+                    {/* date picker */}
+                    <View style={styles.timeContainer}>
+                        <Text style={styles.timeTitle}>Start Date</Text>
+                        <TouchableOpacity onPress={showDatePicker} style={styles.datePicker}>
+                            <Text style={styles.datePickerButtonText}>{selectedDate === new Date() ? "Select Date" : selectedDate.toDateString()}</Text>
+                        </TouchableOpacity>
+                        {showPicker && (
+
+                            <View >
+                                <DateTimePicker
+                                    value={selectedDate}
+                                    mode="date"
+                                    display="default"
+                                    onChange={handleDateChange}
+
+                                />
+
+                            </View>
+
+
+                        )}
+
+                    </View>
+
+
+                    {/* drop down for duration */}
+                    <View >
+                        <Text style={styles.timeTitle} >Duration</Text>
+                        <DropDownPicker
+                            open={open}
+                            value={value}
+                            items={items}
+                            setOpen={setOpen}
+                            setValue={setValue}
+                            setItems={setItems}
+                            containerStyle={styles.dropdownContainer}
+                            textStyle={styles.dropdownText}
+                            style={styles.dropdownStyle}
+                        />
+
+
+                    </View>
+                </View>
+                <Text style={{
+                    marginTop: 30, color: "#040152",
+                    fontSize: 16,
+                    fontFamily: "Poppins-Regular",
+                    fontWeight: "bold",
+                    marginBottom: 30
+                }}>Availability Of Cabins</Text>
+            </View>
+        )
+    }
+    return (
+        <View style={styles.container}>
+
+            <RenderHeader />
+
+            <ScrollView
+                // stickyHeaderIndices={[0]}
+                contentContainerStyle={{
+                    // paddingTop: 10,
+                    // paddingBottom: 10,
+                }}
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={styles.productContainer}>
+                    <View>
+                        <TouchableOpacity>
+                            <Image source={require("../../../assets/CoworkSpace.jpg")} style={{ width: 62, height: 120 }} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ marginLeft: 10, marginRight: 5 }}>
+                        <Text style={{
+                            color: "#040152",
+                            fontSize: 16,
+                            fontFamily: "Poppins-Regular",
+                            fontWeight: "bold",
+                            marginBottom: 5
+                        }}>Cabin of 3</Text>
+                        <View style={styles.floorContainer}>
+                            <Text style={styles.floorText}>Floor 1</Text>
+                        </View>
+                        <View style={{ flexDirection: "row" }}>
+                            <Text style={{
+                                fontSize: 10,
+                                fontWeight: 600,
+                                color: "#040152", 
+                                fontFamily: "Poppins-Regular", 
+                                backgroundColor: "#f5f8ff", 
+                                borderRadius: 9
+                            }}>Available: {70 - c1}   </Text>
+                            <Text style={{
+                                fontSize: 10,
+                                fontWeight: 600,
+                                color: "#040152", 
+                                fontFamily: "Poppins-Regular", 
+                                backgroundColor: "#f5f8ff", 
+                                borderRadius: 9
+                            }}>Booked: {c1}</Text>
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity style={styles.button} onPress={() => { decrement1() }}>
+                                <Text style={styles.buttonText}>-</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.countText}>{click1}</Text>
+                            <TouchableOpacity style={styles.button} onPress={() => { increment1() }}>
+                                <Text style={styles.buttonText}>+</Text>
+                            </TouchableOpacity>
+                            <Text style={{ fontFamily: "Poppins-Regular", fontSize: 14, fontWeight: 600, color: "#040152" }}>  of {70 - c1}</Text>
+                        </View>
+                    </View>
+                    <View style={{
+                        justifyContent: "center",
+                        alignItems: "center", width: 104,marginLeft:50
+                    }}>
+                        <Text style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            color: "#040152", fontFamily: "Poppins-Regular"
+                        }}>₹ 5300</Text>
+                    </View>
+                </View>
+
+                <View style={styles.productContainer}>
+                    <View>
+                        <TouchableOpacity>
+                            <Image source={require("../../../assets/CoworkSpace.jpg")} style={{ width: 62, height: 120 }} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ marginLeft: 10, marginRight: 5 }}>
+                        <Text style={{
+                            color: "#040152",
+                            fontSize: 16,
+                            fontFamily: "Poppins-Regular",
+                            fontWeight: "bold",
+                            marginBottom: 5
+                        }}>Cabin of 5</Text>
+                        <View style={styles.floorContainer}>
+                            <Text style={styles.floorText}>Floor 1</Text>
+                        </View>
+                        <View style={{ flexDirection: "row" }}>
+                            <Text style={{
+                                fontSize: 10,
+                                fontWeight: 600,
+                                color: "#040152", 
+                                fontFamily: "Poppins-Regular", 
+                                backgroundColor: "#f5f8ff", 
+                                borderRadius: 9
+                            }}>Available: 50   </Text>
+                            <Text style={{
+                                fontSize: 10,
+                                fontWeight: 600,
+                                color: "#040152", 
+                                fontFamily: "Poppins-Regular", 
+                                backgroundColor: "#f5f8ff", 
+                                borderRadius: 9
+                            }}>Booked: 30</Text>
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity style={styles.button} onPress={() => { decrement2() }}>
+                                <Text style={styles.buttonText}>-</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.countText}>{click1}</Text>
+                            <TouchableOpacity style={styles.button} onPress={() => { increment2() }}>
+                                <Text style={styles.buttonText}>+</Text>
+                            </TouchableOpacity>
+                            <Text style={{ fontFamily: "Poppins-Regular", fontSize: 14, fontWeight: 600, color: "#040152" }}>  of {70 - c2}</Text>
+                        </View>
+                    </View>
+                    <View style={{
+                        justifyContent: "center",
+                        alignItems: "center", width: 104,marginLeft:50
+                    }}>
+                        <Text style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            color: "#040152", fontFamily: "Poppins-Regular"
+                        }}>₹ 5300</Text>
+                    </View>
+                </View>
+
+                <View style={styles.productContainer}>
+                    <View>
+                        <TouchableOpacity>
+                            <Image source={require("../../../assets/CoworkSpace.jpg")} style={{ width: 62, height: 120 }} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ marginLeft: 5, marginRight: 5 }}>
+                        <Text style={{
+                            color: "#040152",
+                            fontSize: 16,
+                            fontFamily: "Poppins-Regular",
+                            fontWeight: "bold",
+                            marginBottom: 10
+                        }}>Open Desks</Text>
+                        <View style={styles.floorContainer}>
+                            <Text style={styles.floorText}>Floor 1</Text>
+                        </View>
+                        <View style={{ flexDirection: "row" }}>
+                            <Text style={{
+                                fontSize: 10,
+                                fontWeight: 600,
+                                color: "#040152", 
+                                fontFamily: "Poppins-Regular", 
+                                backgroundColor: "#f5f8ff", 
+                                borderRadius: 9
+                            }}>Available: 50   </Text>
+                            <Text style={{
+                                fontSize: 10,
+                                fontWeight: 600,
+                                color: "#040152", 
+                                fontFamily: "Poppins-Regular", 
+                                backgroundColor: "#f5f8ff", 
+                                borderRadius: 9
+                            }}>Booked: 30</Text>
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity style={styles.button} >
+                                <Text style={styles.buttonText}>-</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.countText}>0</Text>
+                            <TouchableOpacity style={styles.button} >
+                                <Text style={styles.buttonText}>+</Text>
+                            </TouchableOpacity>
+                            <Text style={{ fontFamily: "Poppins-Regular", fontSize: 14, fontWeight: 600, color: "#040152" }}>  of 50</Text>
+                        </View>
+                    </View>
+                    <View style={{
+                        justifyContent: "center",
+                        alignItems: "center", width: 104,marginLeft:50
+                    }}>
+                        <Text style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            color: "#040152", fontFamily: "Poppins-Regular"
+                        }}>₹ 5300</Text>
+                    </View>
+                </View>
+            </ScrollView>
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <TouchableOpacity
+                    style={
+                        buttonActive == false ? styles.saveButton : [styles.saveButton, { backgroundColor: "#DF6476" }]
+
+                    }
+                    onPress={() => {
+                        updateDetails();
+                    }}
+                >
+                    <Text style={styles.saveButtonText}>Book Space</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    )
+}
+const styles = StyleSheet.create({
+    container: {
+        marginTop: 20,
+        marginLeft: 20,
+        flex: 1
+    },
+    datePicker: {
+        backgroundColor: "#ffffff",
+        borderRadius: 4,
+        marginTop: 7,
+        width: 148,
+        height: 40,
+        // borderWidth: 1,
+        justifyContent: "center",
+        paddingLeft: 10
+        //alignItems: "center",
+        // Add more custom styles as needed
+    },
+    timeContainer: {
+        marginRight:17
+        // justifyContent: "space-between"
+    },
+    timeTitle: {
+        color: "#040152",
+        fontSize: 14,
+        fontFamily: "Poppins-Regular",
+        fontWeight: "bold",
+
+    },
+    dropdownContainer: {
+
+        width: 161,
+        height: 40,
+        marginTop: 7,
+        borderWidth: 0,
+
+    },
+    dropdownText: {
+        fontSize: 10,
+
+    },
+    dropdownStyle: {
+        backgroundColor: "#fff",
+        borderWidth: 0,
+        borderRadius: 5,
+
+
+    },
+    productContainer: {
+        padding: 10,
+        // borderWidth: 2,
+        width: 350,
+        height: 140,
+        borderRadius: 5,
+        backgroundColor: "#fff",
+        flexDirection: "row",
+        marginBottom: 20
+    },
+    buttonContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        width: 69,
+        height: 21,
+        marginTop: 10,
+        borderWidth: 1,
+        borderRadius: 6,
+        borderColor: "#040152"
+    },
+    button: {
+        width: 20,
+        height: 20,
+
+
+        justifyContent: "center",
+        alignItems: "center",
+        marginHorizontal: 5,
+    },
+    buttonText: {
+        fontSize: 14,
+        fontWeight: 600,
+        color: "#040152",
+        fontFamily: "Poppins-Regular"
+    },
+    countText: {
+        fontSize: 14,
+        fontWeight: 600,
+        color: "#040152",
+        fontFamily: "Poppins-Regular"
+    },
+    saveButton: {
+        //position: "absolute",
+        // marginBottom: 41,
+        // left: 0,
+        // right: 0,
+        backgroundColor: "#808080",
+        borderRadius: 9.66,
+        width: 200,
+        height: 40,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 165,
+        marginLeft: 164,
+        marginBottom: 30,
+        marginTop: 10,
+    },
+    saveButtonText: {
+        fontFamily: "Poppins-Regular",
+        fontSize: 17,
+        fontWeight: 700,
+        color: "#fff",
+    },
+    floorContainer: {
+        width: 67,
+        height: 20,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: "#040152",
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: 10
+    },
+    floorText: {
+        fontSize: 12,
+        fontFamily: "Poppins-Regular",
+        fontWeight: 600,
+        textAlign: "center",
+        textAlignVertical: "center",
+    },
+    avaliableText: {
+        fontSize: 8,
+        fontFamily: "Poppins-Regular",
+        fontWeight: 500,
+        textAlign: "center",
+        textAlignVertical: "center",
+    },
+})
+export default BookCabins
